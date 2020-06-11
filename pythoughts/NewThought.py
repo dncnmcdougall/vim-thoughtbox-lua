@@ -8,7 +8,7 @@ from typing import List
 
 if __name__ == "__main__":
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
-from pythoughts.ThoughtInfo import splitName
+from pythoughts.ThoughtInfo import splitName, listThoughtFiles
 
 def inc(input: str) -> str:
     """ 
@@ -57,10 +57,8 @@ def findNextFileName(files: List[str] , name: str) -> str:
             name_parts[-1] = inc(name_parts[-1])
     return ''.join(name_parts) + '.tb'
 
-def findNextFileNameInDirectory(directory, name):
-    files = os.listdir(directory)
-    files = [ f for f in files if f.endswith('.tb') ]
-    files.sort()
+def findNextFileNameInDirectory(directory: str, name: str) -> str:
+    files = listThoughtFiles(directory)
 
     nextName = findNextFileName(files, name)
     nextName = os.path.join(directory, nextName)
@@ -68,7 +66,7 @@ def findNextFileNameInDirectory(directory, name):
 
     return nextName
 
-def getNewThoughtTemplate():
+def getNewThoughtTemplate() -> List[str]:
     return ['# <+title+>',
             '',
             '# sources',
@@ -82,17 +80,6 @@ def createNewThought(nextName):
         for line in getNewThoughtTemplate():
             nextFile.write(line + '\n')
 
-def findAndOpenNewThoughtInVim(name=''):
-    import vim
-    directory = vim.eval('expand("%:h")')
-
-    nextName = findNextFileNameInDirectory(directory, name)
-
-    vim.command(':e %s' % nextName)
-
-    cb = vim.current.buffer
-    cb[:] = getNewThoughtTemplate()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Searches for the next available thought name.")
     parser.add_argument('--create', action='store_true', default=False, help='If True create the file.')
@@ -101,9 +88,6 @@ if __name__ == "__main__":
     parser.add_argument('--vim', action='store_true', default=False, help='Run the vim command to open the file. This assumes we are in a python environment.')
 
     args = parser.parse_args()
-
-    if args.vim:
-        import vim
 
     files = os.listdir(args.directory)
     files = [ f for f in files if f.endswith('.tb') ]
