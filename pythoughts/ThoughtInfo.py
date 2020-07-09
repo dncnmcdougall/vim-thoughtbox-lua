@@ -20,11 +20,59 @@ def splitName(filename: str) -> List[str]:
             parts.append( name[i] )
     return parts
 
+class NameSortKet:
+    def __init__(self, name, *args):
+        self.name = name
+        self.parts = splitName(self.name)
+
+    def _strComp(self, str1, str2):
+        len1 = len(str1)
+        len2 = len(str2)
+        if len1 < len2:
+            return -1
+        elif len1 > len2:
+            return 1
+        else:
+            for i,c in enumerate(str1):
+                if c < str2[i]:
+                    return -1
+                if c > str2[i]:
+                    return 1
+            return 0
+
+    def _comp(self, other):
+        other_len = len(other.parts)
+        for i, item in enumerate(self.parts):
+            if i >= other_len:
+                return 1
+            str_comp = self._strComp(item, other.parts[i])
+            if str_comp != 0:
+                return str_comp
+        if len(self.parts) < other_len:
+            return -1
+        return 0
+
+    def __lt__(self, other):
+        return self._comp(other) < 0 
+    def __gt__(self, other):
+        return self._comp(other) > 0 
+    def __eq__(self, other):
+        return self._comp(other) == 0 
+    def __le__(self, other):
+        return self._comp(other) <= 0 
+    def __ge__(self, other):
+        return self._comp(other) >= 0 
+    def __ne__(self, other):
+        return self._comp(other) != 0 
+
+def sortNames(names: List[str]) -> None:
+    names.sort(key=NameSortKet)
+
 def listThoughtFiles(directory: str, absolute: bool = False) -> List[str]:
     directory = path.abspath(path.expanduser(directory))
     files = os.listdir(directory)
     files = [ f for f in files if f.endswith('.tb') ]
-    files.sort()
+    sortNames(files)
 
     if absolute:
         files = [ path.join(directory, f) for f in files ]
@@ -85,6 +133,21 @@ class ThoughtInfoTests(unittest.TestCase):
         self.assertEqual(splitName('1a'), ['1','a'])
         self.assertEqual(splitName('1a1a.tb'), ['1','a','1','a'])
         self.assertEqual(splitName('1aa100a.tb'), ['1','aa','100','a'])
+
+    def test_sortNames(self):
+        def getSorted(arr: List[str]) -> List[str]:
+            sortNames(arr)
+            return arr
+            
+
+        self.assertEqual(getSorted(['b','c','a']), ['a','b','c'])
+        self.assertEqual(getSorted(['2','3','1']), ['1','2','3'])
+        self.assertEqual(getSorted(['1b','1c','1a']), ['1a','1b','1c'])
+        self.assertEqual(getSorted(['1b','2','1a']), ['1a','1b','2'])
+        self.assertEqual(getSorted(['1b','2b','1a', '2a']), ['1a','1b','2a', '2b'])
+        self.assertEqual(getSorted(['2a','1a','2b', '1b']), ['1a','1b','2a', '2b'])
+        self.assertEqual(getSorted(['2','10','1']), ['1','2','10'])
+        self.assertEqual(getSorted(['b','aa','a']), ['a','b','aa'])
 
     def test_parseThoughtContent(self):
         heading_content = ['# heading',
