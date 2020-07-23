@@ -33,12 +33,8 @@ highlight default link ThoughtListPathTail Title
 " --------------------------------
 " Add our plugin to the path
 " --------------------------------
-python3 import sys, os, vim
-python3 sys.path.append(os.path.join(vim.eval('expand("<sfile>:p:h:h")'))); import pythoughts
 
-command! PrintPath python3 print(sys.path)
-command! ReloadPyThoughts python3 import importlib; importlib.reload(pythoughts)
-command! -nargs=? NewThought call thoughtbox#newThought(<q-args>)
-command! -nargs=0 ListThoughts call thoughtbox#listThoughts()
+command! -nargs=? NewThought call ThoughtboxNewThought(<q-args>)
+command! -nargs=0 ListThoughts call ThoughtboxListThoughtsByName()
 " command! -nargs=0 ListThoughtTags call thoughtbox#listThoughtTags()
 " command! -nargs=1 ListThoughtsWithTag call thoughtbox#listThoughtsWithTag(<q-args>)
