@@ -9,7 +9,7 @@ function! thoughtbox#open(method) range
     endif
     let paths = getline(firstline, a:lastline)
     for path in paths
-        let path = split(path,':')[0]
+        let path = split(trim(path),':')[0]
         exe 'wincmd p'
         exe a:method.' '.fnameescape(path)
     endfor

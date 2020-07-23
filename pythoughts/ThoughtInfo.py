@@ -87,6 +87,14 @@ def listThougthNumberAndTitle(directory: str) -> List[str]:
         names.append((name, f, content['title']))
     return names
 
+def listThougthNumberTitleAndTag(directory: str) -> List[str]:
+    names = []
+    files = listThoughtFiles(directory, True)
+    for f in files:
+        name, content = readThoughtContent(f)
+        names.append((name, f, content['title'], content['tags']))
+    return names
+
 def readThoughtContent(file_name: str, max_lines: int = None) -> Dict[str, str]:
     name, _ = path.splitext(path.basename(file_name))
     with open(file_name, 'r') as thought_file:
@@ -120,6 +128,7 @@ def parseThoughtContent(content: List[str], name: str) -> Dict[str,str]:
     tags = []
     for line in result['tags']:
         if len(line) > 0:
+            line = line.strip(' ,')
             tags.extend([ tag.strip() for tag in line.split(',')])
     result['tags'] = tags
     return result
@@ -157,7 +166,8 @@ class ThoughtInfoTests(unittest.TestCase):
 
         tags_content = ['# tags',
                 'tag1, tag1b',
-                'tag 2, tag 2b',
+                'tag 2, tag 2b,',
+                'tag 3, tag 3b',
                 '']
         sources_content = ['# sources',
                 'sources 1',
@@ -174,13 +184,13 @@ class ThoughtInfoTests(unittest.TestCase):
         self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':[], 'sources':[]})
 
         result = parseThoughtContent(tags_content, 'test')
-        self.assertEqual(result, {'title': 'tags', 'content':['tag1, tag1b','tag 2, tag 2b',''], 'tags':[], 'sources':[]})
+        self.assertEqual(result, {'title': 'tags', 'content':['tag1, tag1b','tag 2, tag 2b,', 'tag 3, tag 3b',''], 'tags':[], 'sources':[]})
 
         content = []
         content.extend([heading_content[0]])
         content.extend(tags_content)
         result = parseThoughtContent(content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b'], 'sources':[]})
+        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':[]})
 
         content = []
         content.extend([heading_content[0]])
@@ -193,5 +203,5 @@ class ThoughtInfoTests(unittest.TestCase):
         content.extend(tags_content)
         content.extend(sources_content)
         result = parseThoughtContent(content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b'], 'sources':['sources 1','sources 2','']})
+        self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':['sources 1','sources 2','']})
 

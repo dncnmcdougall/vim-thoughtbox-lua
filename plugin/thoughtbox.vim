@@ -36,5 +36,5 @@ highlight default link ThoughtListPathTail Title
 
 command! -nargs=? NewThought call ThoughtboxNewThought(<q-args>)
 command! -nargs=0 ListThoughts call ThoughtboxListThoughtsByName()
-" command! -nargs=0 ListThoughtTags call thoughtbox#listThoughtTags()
+command! -nargs=0 ListThoughtTags call ThoughtboxListThoughtsByTag()
 " command! -nargs=1 ListThoughtsWithTag call thoughtbox#listThoughtsWithTag(<q-args>)

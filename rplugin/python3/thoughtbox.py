@@ -46,7 +46,7 @@ class thoughtbox(object):
 
 
     @pynvim.function("ThoughtboxListThoughtsByName", sync=True)
-    def listThoughts(self, args):
+    def listThoughtsByName(self, args):
 
         settings = self._getSettings()
 
@@ -63,6 +63,45 @@ class thoughtbox(object):
 
         names = pythoughts.ThoughtInfo.listThougthNumberAndTitle(directory)
         content = [ '%s: %s' % (f, t) for n,f,t in names ]
+
+        cb = self.vim.current.buffer
+        cb[:] = content
+
+        self.vim.command('setlocal conceallevel=2 ')
+        self.vim.command('setlocal concealcursor=nvc')
+        self.vim.command('setlocal cursorline')
+        sep = settings['sep']
+        self.vim.funcs.search('.*\\'+sep+'\\ze[^\\'+sep+']\\+\\'+sep+'\\?:', 'ce', self.vim.funcs.line('.'))
+
+    @pynvim.function("ThoughtboxListThoughtsByTag", sync=True)
+    def listThoughtsByTag(self, args):
+
+        settings = self._getSettings()
+
+        self.vim.call('utils#OpenListWindow', 
+                settings['vertical_split'],
+                settings['open_pos'],
+                settings['split_size'],
+                '_thought_list_',
+                'thoughtlist',
+                settings['list_auto_close'],
+                settings['list_jump_to_on_open'])
+
+        directory = settings['folder']
+
+        thoughts = pythoughts.ThoughtInfo.listThougthNumberTitleAndTag(directory)
+        thought_dict = {}
+        for name, fle, title, tags in thoughts:
+            for tag in tags:
+                if tag not in thought_dict:
+                    thought_dict[tag] = []
+                thought_dict[tag].append( '  %s: %s' % (fle, title) )
+
+        keys = sorted(thought_dict.keys(), key=str.lower)
+        content = []
+        for key in keys:
+            content.append('%s: ' % key)
+            content.extend(  thought_dict[key] )
 
         cb = self.vim.current.buffer
         cb[:] = content
