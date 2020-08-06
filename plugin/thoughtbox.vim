@@ -1,6 +1,6 @@
-" if exists('g:loaded_thoughtbox') || &cp || v:version < 700 || &cpo =~# 'C'
-"   finish
-" endif
+if exists('g:loaded_thoughtbox') 
+  finish
+endif
 let g:loaded_thoughtbox = 1
 
 augroup thoughtboxfiltypedetect
