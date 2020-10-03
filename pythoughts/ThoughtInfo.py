@@ -1,5 +1,6 @@
 from typing import List, Dict
 import os 
+import re 
 from os import path
 
 if __name__ == "__main__":
@@ -111,9 +112,9 @@ def readThoughtContent(file_name: str, max_lines: int = None) -> Dict[str, str]:
 
 def parseThoughtContent(content: List[str], name: str) -> Dict[str,str]:
     heading = None
-    result = {'title':None, 'content':[], 'tags': [], 'sources': []}
+    result = {'title':None, 'content':[], 'tags': [], 'sources': [], 'links':[]}
     for line in content:
-        if line.startswith('#'):
+        if line.startswith('# '):
             line= line[1:].strip()
             if heading is None:
                 heading = 'content'
@@ -126,11 +127,29 @@ def parseThoughtContent(content: List[str], name: str) -> Dict[str,str]:
             print('Warning: did not understand heading %s in %s' % (heading, name))
 
     tags = []
+    tag_re = re.compile('#\w*')
+
+    for line in result['content']:
+        matches = tag_re.finditer(line)
+        for m in matches:
+            tag = m.group()[1:]
+            tags.append(tag)
+
     for line in result['tags']:
         if len(line) > 0:
             line = line.strip(' ,')
             tags.extend([ tag.strip() for tag in line.split(',')])
     result['tags'] = tags
+
+
+    links = []
+    link_re = re.compile('\[\[.*?\]\]')
+    for line in result['content']:
+        matches = link_re.finditer(line)
+        for m in matches:
+            link = m.group()[2:-2]
+            links.append(link)
+    result['links'] = links
     return result
     
 
@@ -164,44 +183,151 @@ class ThoughtInfoTests(unittest.TestCase):
                 'content 2',
                 '']
 
+        inline_tags = [
+                'The #cat jumped',
+                '#dog jumped too',
+                'as did the #kangaroo',
+                '']
+
+        inline_links = [
+                'The cat [[1]] jumped',
+                '[[2]] dog jumped too',
+                'as did the kangaroo [[3]]',
+                '']
+
         tags_content = ['# tags',
                 'tag1, tag1b',
                 'tag 2, tag 2b,',
                 'tag 3, tag 3b',
                 '']
+
         sources_content = ['# sources',
                 'sources 1',
                 'sources 2',
                 '']
 
-        result = parseThoughtContent([], 'test')
-        self.assertEqual(result, {'title':None, 'content':[], 'tags':[], 'sources':[]})
-
-        result = parseThoughtContent([heading_content[0]], 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':[], 'sources':[]})
-        
-        result = parseThoughtContent(heading_content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':[], 'sources':[]})
-
-        result = parseThoughtContent(tags_content, 'test')
-        self.assertEqual(result, {'title': 'tags', 'content':['tag1, tag1b','tag 2, tag 2b,', 'tag 3, tag 3b',''], 'tags':[], 'sources':[]})
-
-        content = []
-        content.extend([heading_content[0]])
-        content.extend(tags_content)
-        result = parseThoughtContent(content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':[]})
-
-        content = []
-        content.extend([heading_content[0]])
-        content.extend(sources_content)
-        result = parseThoughtContent(content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':[], 'sources':['sources 1','sources 2','']})
 
         content = []
         content.extend(heading_content)
+        content.extend(inline_tags)
+        content.extend(inline_links)
         content.extend(tags_content)
         content.extend(sources_content)
+
+        expected_content = []
+        expected_content.extend(heading_content[1:])
+        expected_content.extend(inline_tags)
+        expected_content.extend(inline_links)
         result = parseThoughtContent(content, 'test')
-        self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':['sources 1','sources 2','']})
+        self.assertEqual(result, {
+            'title': 'heading', 
+            'content': expected_content,
+            'tags':['cat', 'dog', 'kangaroo', 'tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 
+            'sources':['sources 1','sources 2',''], 
+            'links': ['1','2','3']})
+
+
+    def test_parseThoughtContent_heading(self):
+        heading_content = ['# heading',
+                'content 1',
+                'content 2',
+                '']
+
+        heading_content_2 = ['# heading 2',
+                'content 1',
+                'content 2',
+                '']
+
+
+        result = parseThoughtContent([], 'test')
+        self.assertEqual(result, {'title':None, 'content':[], 'tags':[], 'sources':[], 'links': []})
+
+        result = parseThoughtContent([heading_content[0]], 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':[], 'sources':[], 'links': []})
+        
+        result = parseThoughtContent(heading_content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':['content 1', 'content 2', ''], 'tags':[], 'sources':[], 'links': []})
+
+        result = parseThoughtContent(heading_content_2, 'test')
+        self.assertEqual(result, {'title': 'heading 2', 'content':['content 1', 'content 2', ''], 'tags':[], 'sources':[], 'links': []})
+
+    def test_parseThoughtContent_tags(self):
+        heading_content = ['# heading',
+                'content 1',
+                'content 2',
+                '']
+
+        inline_tags = [
+                'The #cat jumped',
+                '#dog jumped too',
+                'as did the #kangaroo',
+                '']
+
+        tags_content = ['# tags',
+                'tag1, tag1b',
+                'tag 2, tag 2b,',
+                'tag 3, tag 3b',
+                '']
+
+        result = parseThoughtContent(tags_content, 'test')
+        self.assertEqual(result, {'title': 'tags', 'content':['tag1, tag1b','tag 2, tag 2b,', 'tag 3, tag 3b',''], 'tags':[], 'sources':[], 'links': []})
+
+        content = []
+        content.extend([heading_content[0]])
+        content.extend(tags_content)
+        result = parseThoughtContent(content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':['tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':[], 'links': []})
+
+        content = []
+        content.extend([heading_content[0]])
+        content.extend(inline_tags)
+        result = parseThoughtContent(content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':['The #cat jumped', '#dog jumped too', 'as did the #kangaroo', ''], 'tags':['cat','dog', 'kangaroo'], 'sources':[], 'links': []})
+
+        content = []
+        content.extend([heading_content[0]])
+        content.extend(inline_tags)
+        content.extend(tags_content)
+        result = parseThoughtContent(content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':['The #cat jumped', '#dog jumped too', 'as did the #kangaroo', ''], 'tags':['cat', 'dog', 'kangaroo', 'tag1','tag1b', 'tag 2', 'tag 2b', 'tag 3', 'tag 3b'], 'sources':[], 'links': []})
+
+    def test_parseThoughtContent_links(self):
+        heading_content = ['# heading',
+                'content 1',
+                'content 2',
+                '']
+
+        inline_links = [
+                'The cat [[1]] jumped',
+                '[[2]] dog jumped too',
+                'as did the kangaroo [[3]]',
+                'all [[4]] jumping together [[5]]',
+                '']
+
+        content = []
+        content.extend([heading_content[0]])
+        content.extend(inline_links)
+        result = parseThoughtContent(content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':['The cat [[1]] jumped', '[[2]] dog jumped too', 'as did the kangaroo [[3]]', 'all [[4]] jumping together [[5]]',''], 'tags':[], 'sources':[], 'links': ['1','2','3','4','5']})
+
+    def test_parseThoughtContent_sources(self):
+        heading_content = ['# heading',
+                'content 1',
+                'content 2',
+                '']
+
+        sources_content = ['# sources',
+                'sources 1',
+                'sources 2',
+                '']
+
+        result = parseThoughtContent(sources_content, 'test')
+        self.assertEqual(result, {'title': 'sources', 'content':['sources 1','sources 2', ''], 'tags':[], 'sources':[], 'links': []})
+
+        content = []
+        content.extend([heading_content[0]])
+        content.extend(sources_content)
+        result = parseThoughtContent(content, 'test')
+        self.assertEqual(result, {'title': 'heading', 'content':[], 'tags':[], 'sources':['sources 1','sources 2',''], 'links': []})
+
 
