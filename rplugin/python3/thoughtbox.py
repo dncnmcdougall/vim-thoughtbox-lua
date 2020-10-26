@@ -29,9 +29,6 @@ class thoughtbox(object):
 
     @pynvim.function("ThoughtboxNewThought", sync=True)
     def newThought(self, args):
-        self._print(args)
-        self._print('Hello World')
-
         settings = self._getSettings()
 
         directory = settings['folder']
