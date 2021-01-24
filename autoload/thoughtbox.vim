@@ -19,6 +19,27 @@ function! thoughtbox#open(method) range
     endfor
 endfunction
 
+function! s:openList(list_content)
+    call utils#OpenListWindow( 
+                \ g:thoughtbox#vertical_split,
+                \ g:thoughtbox#open_pos,
+                \ g:thoughtbox#split_size,
+                \ "_thought_list_",
+                \ "thoughtlist",
+                \ g:thoughtbox#list_auto_close,
+                \ g:thoughtbox#list_jump_to_on_open)
+
+    call deletebufline("%",1,"$")
+    call append(0,a:list_content)
+
+    setlocal conceallevel=2
+    setlocal concealcursor=nvc
+    setlocal cursorline
+    call cursor(1,0)
+    call search(':', 'ce', line('.'))
+
+endfunction
+
 function! thoughtbox#listThoughtsByName()
     let thought_folder = expand(g:thoughtbox#folder).s:sep
 
@@ -37,24 +58,7 @@ function! thoughtbox#listThoughtsByName()
         let list_content += [thoughts[name].file.': '.thoughts[name].title]
     endfor
 
-    call utils#OpenListWindow( 
-                \ g:thoughtbox#vertical_split,
-                \ g:thoughtbox#open_pos,
-                \ g:thoughtbox#split_size,
-                \ "_thought_list_",
-                \ "thoughtlist",
-                \ g:thoughtbox#list_auto_close,
-                \ g:thoughtbox#list_jump_to_on_open)
-
-    call deletebufline("%",1,"$")
-    call append(0,list_content)
-
-    setlocal conceallevel=2
-    setlocal concealcursor=nvc
-    setlocal cursorline
-    call cursor(1,0)
-    call search(':', 'ce', line('.'))
-
+    call s:openList(list_content)
 endfunction
 
 function! thoughtbox#listThoughtsByTag()
@@ -82,21 +86,5 @@ function! thoughtbox#listThoughtsByTag()
         endfor
     endfor
 
-    call utils#OpenListWindow( 
-                \ g:thoughtbox#vertical_split,
-                \ g:thoughtbox#open_pos,
-                \ g:thoughtbox#split_size,
-                \ "_thought_list_",
-                \ "thoughtlist",
-                \ g:thoughtbox#list_auto_close,
-                \ g:thoughtbox#list_jump_to_on_open)
-
-    call deletebufline("%",1,"$")
-    call append(0,list_content)
-
-    setlocal conceallevel=2
-    setlocal concealcursor=nvc
-    setlocal cursorline
-    call cursor(1,0)
-    call search(':', 'ce', line('.'))
+    call s:openList(list_content)
 endfunction
