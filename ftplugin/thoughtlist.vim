@@ -9,3 +9,4 @@ nnoremap <nowait><buffer><silent> o :'<,'>call thoughtbox#open('split')<CR>
 
 vnoremap <nowait><buffer><silent> <CR> :'<,'>call thoughtbox#open('edit')<CR>
 vnoremap <nowait><buffer><silent> o :'<,'>call thoughtbox#open('split')<CR>
+
