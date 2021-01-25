@@ -12,4 +12,4 @@ let s:thought = luaeval(
 
 let b:title = s:thought.title
 
-nnoremap <nowait><buffer><silent> - :<C-U>call thoughtbox#openThoughtListByName()<CR>
+nnoremap <nowait><buffer><silent> - :<C-U>call thoughtbox#openThoughtListByName(b:thought)<CR>

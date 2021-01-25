@@ -23,7 +23,7 @@ function! thoughtbox#open(line, method)
     exe a:method.' '.fnameescape(path)
 endfunction
 
-function! s:openList(list_content)
+function! s:openList(list_content, initial_search)
     let prevwinid = win_getid()
 
     exe 'silent keepalt edit _thought_list_'
@@ -51,7 +51,11 @@ function! s:openList(list_content)
     setlocal concealcursor=nvc
     setlocal cursorline
     call cursor(1,0)
-    call search(':', 'ce', line('.'))
+    if a:initial_search != '' 
+        call search(a:initial_search,'c')
+    else
+        call search(':', 'ce', line('.'))
+    endif
 endfunction
 
 function! s:splitList(list_content)
@@ -144,8 +148,8 @@ function! thoughtbox#listThoughtsByTag()
     return list_content
 endfunction
 
-function! thoughtbox#openThoughtListByName()
-    call s:openList(thoughtbox#listThoughtsByName())
+function! thoughtbox#openThoughtListByName(name)
+    call s:openList(thoughtbox#listThoughtsByName(), a:name)
 endfunction
 
 function! thoughtbox#splitThoughtListByName()
