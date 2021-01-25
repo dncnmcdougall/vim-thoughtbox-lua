@@ -28,14 +28,26 @@ if !exists('g:thoughtbox#list_jump_to_on_open')
     let g:thoughtbox#list_jump_to_on_open=1
 endif
 
+if !exists('g:thoughtbox#fzf') 
+    let g:thoughtbox#fzf=1
+endif
+
+if g:thoughtbox#fzf
+    function! s:fzfEditThought(line)
+        let line_parts = split(a:line,"\t")
+        call thoughtbox#open(line_parts[1].line_parts[2], 'edit')
+    endfunction
+    command! -nargs=0 SearchThoughts call fzf#run(fzf#wrap('thoughts',{
+                \ "source": thoughtbox#listThoughtsByNameWithName(), 
+                \ 'sink':funcref('s:fzfEditThought') ,
+                \ 'options': "--with-nth=1,3 --delimiter='\t'"
+                \ }))
+endif
+
+
 highlight default link ThoughtListPath String
 highlight default link ThoughtListTitle Title
 
-" --------------------------------
-" Add our plugin to the path
-" --------------------------------
-
 command! -nargs=? NewThought call ThoughtboxNewThought(<q-args>)
-command! -nargs=0 ListThoughts call thoughtbox#listThoughtsByName()
-command! -nargs=0 ListThoughtTags call thoughtbox#listThoughtsByTag()
-" command! -nargs=1 ListThoughtsWithTag call thoughtbox#listThoughtsWithTag(<q-args>)
+command! -nargs=0 ListThoughts call thoughtbox#splitThoughtListByName()
+command! -nargs=0 ListThoughtTags call thoughtbox#splitThoughtListByTag()

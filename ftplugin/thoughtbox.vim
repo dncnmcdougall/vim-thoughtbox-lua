@@ -11,3 +11,5 @@ let s:thought = luaeval(
             \[[s:line1], b:thought])
 
 let b:title = s:thought.title
+
+nnoremap <nowait><buffer><silent> - :<C-U>call thoughtbox#openThoughtListByName()<CR>
