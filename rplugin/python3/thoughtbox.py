@@ -24,7 +24,7 @@ class thoughtbox(object):
                 'open_pos': self.vim.eval('g:thoughtbox#open_pos'),
                 'split_size': self.vim.eval('g:thoughtbox#split_size'),
                 'list_auto_close': self.vim.eval('g:thoughtbox#list_auto_close'),
-                'list_jump_to_on_open': self.vim.eval('g:thoughtbox#list_jump_to_on_open')
+                'jump_to_list_on_open': self.vim.eval('g:thoughtbox#jump_to_list_on_open')
                 }
 
     @pynvim.function("ThoughtboxNewThought", sync=True)

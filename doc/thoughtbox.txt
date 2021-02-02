@@ -1,0 +1,111 @@
+*thoughtbox.txt* A simple plugin for creating and managing a thought box.
+
+Author: Duncan McDougall
+
+Type |gO| to see the table of contents.
+===============================================================================
+OVERVIEW                                                            *thoughtbox*
+
+Thoughtbox is a simple set of utilities aimed at making writing and manging a
+Zettelkasten like thing easier in vim.
+
+                                                                *thought-naming*
+Thought naming~
+TODO
+
+                                                                   *thoughtlist*
+The thought list~
+TODO
+ 
+                                                           *thought-file-format*
+Thought file format~
+TODO
+
+                                                                  *future-plans*
+Future plans~
+TODO
+
+
+===============================================================================
+REQUIREMENTS                                           *thoughtbox-requirements*
+
+This plugin uses Python3, lua, and neovim apis.
+Remember to :UpdateRemote plugins to use.
+
+
+===============================================================================
+COMMANDS                                                    *thoughtbox-command*
+
+                                                                         *:NewThought*
+:NewThought [name]
+    Creates and opens a new thought file in |g:thoughtbox#folder| under the
+    [name] given. If no name is given a new top-level name is chosen.  See
+    |thought-naming| for details.
+
+                                                                    *:ListThoughts*
+:ListThoughts
+    Opens the thoughtlist in a split and list all the thoughts. The behaviour
+    of this split is controlled by the settings.
+
+                                                                        *:ListThoughtTags*
+:ListThoughtTags 
+    Opens the thoughtlist in a split and list all the thoughts, grouped by
+    tags. The behaviour of this split is controlled by the settings.
+
+                                                                       *:SearchThoughts*
+:SearchThoughts 
+    List all the thoughts in an FZF search.
+    Only available if |g:thoughtbox#fzf|=1
+
+===============================================================================
+SETTINGS                                                   *thoughtbox-settings*
+
+                                                           *g:thoughtbox#folder*
+g:thoughtbox#folder = '~/thoughtbox'
+    The folder to store thoughts in. New thoughts are created in here, and
+    this is searched fro thoughts.
+
+                                                   *g:thoughtbox#vertical_split*
+g:thoughtbox#vertical_split = 1
+    If this is 1 (default) then using |:ListThoughts| performs a vertical split to
+    display the thoughtlist. Otherwise, if set to 0, a horizontal split is used.
+
+                                                         *g:thoughtbox#open_pos*
+g:thoughtbox#open_pos = 'botright'
+    This governs the position of where the split is opened. Other options
+    include |topleft| and so on. See |E36| for more options.
+
+                                                       *g:thoughtbox#split_size*
+g:thoughtbox#split_size = 40
+    This governs the width (in vertical split) or height (in horizontal split)
+    of the thoughtlist.
+
+                                                  *g:thoughtbox#list_auto_close*
+g:thoughtbox#list_auto_close = 1
+    If set to 1 (default) then the thought list will close when the cursor
+    leave it, or when a thought is opened.
+
+                                             *g:thoughtbox#jump_to_list_on_open*
+g:thoughtbox#jump_to_list_on_open = 1
+    If set to 1 (default) then the cursor is moved to the thoughtlist once it
+    is opened.
+    TODO: Not having this 1 will result is weird problems!
+
+                                                              *g:thoughtbox#fzf*
+g:thoughtbox#fzf = 1
+    This enables populating a FZF search with the list of thoughts.
+    This enables the command |:SearchThoughts|
+
+
+===============================================================================
+FUNCTIONS                                                 *thoughtbox-functions*
+
+                                                        *ThoughtboxNewThought()*
+ThoughtboxNewThought({name})
+    Creates and opens a new thought file in |g:thoughtbox#folder| under the
+    [name] given. If no name is given a new top-level name is chosen.  See
+    |thought-naming| for details.
+
+
+
+vim:ft=help

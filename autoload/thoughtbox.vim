@@ -66,7 +66,7 @@ function! s:splitList(list_content)
                 \ "_thought_list_",
                 \ "thoughtlist",
                 \ g:thoughtbox#list_auto_close,
-                \ g:thoughtbox#list_jump_to_on_open)
+                \ g:thoughtbox#jump_to_list_on_open)
 
     call deletebufline("%",1,"$")
     call append(0,a:list_content)

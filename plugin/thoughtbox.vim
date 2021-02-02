@@ -24,8 +24,8 @@ endif
 if !exists('g:thoughtbox#list_auto_close') 
     let g:thoughtbox#list_auto_close=1
 endif
-if !exists('g:thoughtbox#list_jump_to_on_open') 
-    let g:thoughtbox#list_jump_to_on_open=1
+if !exists('g:thoughtbox#jump_to_list_on_open') 
+    let g:thoughtbox#jump_to_list_on_open=1
 endif
 
 if !exists('g:thoughtbox#fzf') 
