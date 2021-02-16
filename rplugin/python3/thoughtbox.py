@@ -41,4 +41,7 @@ class thoughtbox(object):
         cb = self.vim.current.buffer
         cb[:] = pythoughts.NewThought.getNewThoughtTemplate()
 
+        self.vim.command(':unlet b:loaded_thoughtbox')
+        self.vim.command(':set ft=thoughtbox')
+
 
