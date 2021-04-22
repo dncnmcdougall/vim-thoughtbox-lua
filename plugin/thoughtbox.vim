@@ -33,14 +33,24 @@ if !exists('g:thoughtbox#fzf')
 endif
 
 if g:thoughtbox#fzf
-    function! s:fzfEditThought(line)
+    function! s:fzfEditThoughtByName(line)
         let line_parts = split(a:line,"\t")
         call thoughtbox#open(line_parts[1].line_parts[2], 'edit')
     endfunction
     command! -nargs=0 SearchThoughts call fzf#run(fzf#wrap('thoughts',{
-                \ "source": thoughtbox#listThoughtsByNameWithName(), 
-                \ 'sink':funcref('s:fzfEditThought') ,
+                \ "source": thoughtbox#listThoughtsByNameWithName("\t"), 
+                \ 'sink':funcref('s:fzfEditThoughtByName') ,
                 \ 'options': "--with-nth=1,3 --delimiter='\t'"
+                \ }))
+
+    function! s:fzfEditThoughtByTag(line)
+        let line_parts = split(a:line,"\t")
+        call thoughtbox#open(line_parts[2].line_parts[3], 'edit')
+    endfunction
+    command! -nargs=0 SearchThoughtTags call fzf#run(fzf#wrap('thoughts',{
+                \ "source": thoughtbox#listThoughtsByTagWithName("\t"), 
+                \ 'sink':funcref('s:fzfEditThoughtByTag') ,
+                \ 'options': "--with-nth=1,2,4 --delimiter='\t'"
                 \ }))
 endif
 

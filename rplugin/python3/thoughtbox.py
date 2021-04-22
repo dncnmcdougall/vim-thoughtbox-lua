@@ -36,12 +36,12 @@ class thoughtbox(object):
 
         nextName = pythoughts.NewThought.findNextFileNameInDirectory(directory, name)
 
-        self.vim.command(':e %s' % nextName)
+        self.vim.command(':enew')
 
         cb = self.vim.current.buffer
         cb[:] = pythoughts.NewThought.getNewThoughtTemplate()
 
-        self.vim.command(':unlet b:loaded_thoughtbox')
+        self.vim.command(':file %s' % nextName)
         self.vim.command(':set ft=thoughtbox')
 
 

@@ -80,7 +80,7 @@ function! s:splitList(list_content)
 
 endfunction
 
-function! thoughtbox#listThoughtsByName()
+function! s:listThoughts() 
     let thought_folder = expand(g:thoughtbox#folder).s:sep
 
     let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
@@ -93,45 +93,55 @@ function! thoughtbox#listThoughtsByName()
                 \'require("thoughtio").readThoughtsTitleAndTags(unpack(_A))',
                 \[thought_folder, thought_names])
 
+    return [thoughts, thought_names]
+endfunction
+
+function! thoughtbox#listThoughtsByName(content_sep)
+    let thought_parts = s:listThoughts()
+    let thoughts = thought_parts[0]
+    let thought_names = thought_parts[1]
+
     let list_content = []
     for name in thought_names
-        let list_content += [thoughts[name].file.': '.thoughts[name].title]
+        let list_content += [thoughts[name].file.':'.a:content_sep.thoughts[name].title]
     endfor
     return list_content
 endfunction
 
-function! thoughtbox#listThoughtsByNameWithName()
-    let thought_folder = expand(g:thoughtbox#folder).s:sep
-
-    let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
-
-    let thought_names = luaeval(
-                \'require("thoughtbox").sortNames(_A)',
-                \thought_names)
-
-    let thoughts = luaeval(
-                \'require("thoughtio").readThoughtsTitleAndTags(unpack(_A))',
-                \[thought_folder, thought_names])
+function! thoughtbox#listThoughtsByNameWithName(content_sep)
+    let thought_parts = s:listThoughts()
+    let thoughts = thought_parts[0]
+    let thought_names = thought_parts[1]
 
     let list_content = []
     for name in thought_names
-        let list_content += [name."\t".thoughts[name].file.":\t".thoughts[name].title]
+        let list_content += [name.a:content_sep.thoughts[name].file.":".a:content_sep.thoughts[name].title]
+    endfor
+    return list_content
+endfunction
+
+function! thoughtbox#listThoughtsByTagWithName(content_sep)
+    let thought_parts = s:listThoughts()
+    let thoughts = thought_parts[0]
+    let thought_names = thought_parts[1]
+
+    let [tagged, keys] = luaeval(
+                \'require("thoughtio").groupByTags(_A)',
+                \thoughts)
+
+    let list_content = []
+    for key in keys
+        for name in tagged[key] 
+            let list_content += [key.a:content_sep.name.a:content_sep.thoughts[name].file.':'.a:content_sep.thoughts[name].title]
+        endfor
     endfor
     return list_content
 endfunction
 
 function! thoughtbox#listThoughtsByTag()
-    let thought_folder = expand(g:thoughtbox#folder).s:sep
-
-    let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
-
-    let thought_names = luaeval(
-                \'require("thoughtbox").sortNames(_A)',
-                \thought_names)
-
-    let thoughts = luaeval(
-                \'require("thoughtio").readThoughtsTitleAndTags(unpack(_A))',
-                \[thought_folder, thought_names])
+    let thought_parts = s:listThoughts()
+    let thoughts = thought_parts[0]
+    let thought_names = thought_parts[1]
 
     let [tagged, keys] = luaeval(
                 \'require("thoughtio").groupByTags(_A)',
@@ -149,11 +159,11 @@ function! thoughtbox#listThoughtsByTag()
 endfunction
 
 function! thoughtbox#openThoughtListByName(name)
-    call s:openList(thoughtbox#listThoughtsByName(), a:name)
+    call s:openList(thoughtbox#listThoughtsByName(' '), a:name)
 endfunction
 
 function! thoughtbox#splitThoughtListByName()
-    call s:splitList(thoughtbox#listThoughtsByName())
+    call s:splitList(thoughtbox#listThoughtsByName(' '))
 endfunction
 
 function! thoughtbox#splitThoughtListByTag()

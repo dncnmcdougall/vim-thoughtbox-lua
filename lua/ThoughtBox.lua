@@ -49,8 +49,6 @@ function incPart(part)
     end
 end
 
-
-
 function compareParts(part1, part2)
     local len1 = string.len(part1)
     local len2 = string.len(part2)
