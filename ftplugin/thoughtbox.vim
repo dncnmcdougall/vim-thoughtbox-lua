@@ -12,5 +12,11 @@ let s:thought = luaeval(
 
 let b:title = s:thought.title
 
+let s:sep = exists('+shellslash') && !&shellslash ? '\' : '/'
+
+function s:openTag()
+endfunction
+
 nnoremap <nowait><buffer><silent> - :<C-U>call thoughtbox#openThoughtListByName(b:thought)<CR>
+nnoremap <c-]> :<C-U>call thoughtbox#openTagAtPosition()<CR>
 

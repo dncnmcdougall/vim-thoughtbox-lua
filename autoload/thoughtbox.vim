@@ -19,9 +19,39 @@ function! thoughtbox#open(line, method)
         echom 'Ignoring: '.a:line
         continue
     end
-    exe 'wincmd p'
+    if b:use_previous == 1
+        exe 'wincmd p'
+    endif
     exe a:method.' '.fnameescape(path)
 endfunction
+
+function! thoughtbox#openTagAtPosition()
+    let word = expand("<cword>")
+    let pos = getcurpos()
+    let start = searchpos('\[\[','bc', pos[1])
+    let end = [0,0]
+    if start[0] != 0
+        let end = searchpos('\]\]','', pos[1])
+    endif
+    if end[0] != 0
+        let word = strpart(getline(start[0]), start[1]+1, end[1]-start[1]-2)
+
+        let thought_file = expand(g:thoughtbox#folder).s:sep.word.".tb"
+        if filereadable(thought_file)
+            echom "open file: ".thought_file
+            exe ":edit ".thought_file
+        else
+            echoerr "Could not find file: ".thought_file
+        endif
+    else
+        if exists('g:tag_jump_cmd')
+            exe eval(g:tag_jump_cmd)
+        else
+            exe ":tag ".word
+        endif
+    endif
+endfunction
+
 
 function! s:openList(list_content, initial_search)
     let prevwinid = win_getid()
@@ -42,6 +72,8 @@ function! s:openList(list_content, initial_search)
     setlocal nonumber
     setlocal nofoldenable
     setlocal foldcolumn=0
+
+    let b:use_previous=0
 
     call deletebufline("%",1,"$")
     call append(0,a:list_content)
@@ -67,6 +99,8 @@ function! s:splitList(list_content)
                 \ "thoughtlist",
                 \ g:thoughtbox#list_auto_close,
                 \ g:thoughtbox#jump_to_list_on_open)
+
+    let b:use_previous=1
 
     call deletebufline("%",1,"$")
     call append(0,a:list_content)

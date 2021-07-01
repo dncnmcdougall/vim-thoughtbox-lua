@@ -27,7 +27,6 @@ endif
 if !exists('g:thoughtbox#jump_to_list_on_open') 
     let g:thoughtbox#jump_to_list_on_open=1
 endif
-
 if !exists('g:thoughtbox#fzf') 
     let g:thoughtbox#fzf=1
 endif
