@@ -19,7 +19,7 @@ function! thoughtbox#open(line, method)
         echom 'Ignoring: '.a:line
         continue
     end
-    if b:use_previous == 1
+    if exists('b:use_previous') && b:use_previous == 1
         exe 'wincmd p'
     endif
     exe a:method.' '.fnameescape(path)
