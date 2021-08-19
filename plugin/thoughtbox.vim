@@ -36,7 +36,7 @@ if g:thoughtbox#fzf
         let line_parts = split(a:line,"\t")
         call thoughtbox#open(line_parts[1].line_parts[2], 'edit')
     endfunction
-    command! -nargs=0 SearchThoughts call fzf#run(fzf#wrap('thoughts',{
+    command! -nargs=0 SearchThoughtTitles call fzf#run(fzf#wrap('thoughts',{
                 \ "source": thoughtbox#listThoughtsByNameWithName("\t"), 
                 \ 'sink':funcref('s:fzfEditThoughtByName') ,
                 \ 'options': "--with-nth=1,3 --delimiter='\t'"
@@ -51,6 +51,15 @@ if g:thoughtbox#fzf
                 \ 'sink':funcref('s:fzfEditThoughtByTag') ,
                 \ 'options': "--with-nth=1,2,4 --delimiter='\t'"
                 \ }))
+
+
+    let search_command='ag --noheading --nogroup --numbers --filename --color'
+    command! -nargs=0 SearchThoughts call fzf#run(fzf#wrap('Search', {
+                \ 'options':' --bind "change:reload:'.search_command.' {q} '.g:thoughtbox#folder.' || true" --ansi --color="hl:black"',
+                \ 'source': [],
+                \ 'sink': function('ParseEFMLine')
+                \}))
+
 endif
 
 
