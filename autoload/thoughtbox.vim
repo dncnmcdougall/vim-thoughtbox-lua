@@ -1,5 +1,28 @@
 let s:sep = exists('+shellslash') && !&shellslash ? '\' : '/'
 
+function! thoughtbox#postThoughtWrite(name) 
+    if executable(g:thoughtbox#write_cmd)
+        let thought = luaeval(
+                    \'require("thoughtbox").parseThoughtContent(unpack(_A))',
+                    \[lines, a:name])
+        let tags = ''
+        let links = ''
+        for link in thought.links
+            let links .= ' -l '.link
+        endfor
+        for tag in thought.tags
+            let tags .= ' -t '.tag
+        endfor
+
+        let cmd = g:thoughtbox#write_cmd.' '.a:name.' '.thought.title . links . tags
+        let cmd .= ' --database '.g:thoughtbox#folder.'/'.g:thoughtbox#database
+        exec 'silent !'.cmd
+    else
+        echom "Not using read or write: ".g:thoughtbox#write_cmd
+    end
+endfunction
+
+
 function! thoughtbox#openSelection(method) range
     if a:method == 'edit'
         let firstline=a:lastline
@@ -117,15 +140,29 @@ endfunction
 function! s:listThoughts() 
     let thought_folder = expand(g:thoughtbox#folder).s:sep
 
-    let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
 
-    let thought_names = luaeval(
-                \'require("thoughtbox").sortNames(_A)',
-                \thought_names)
-
+    if executable(g:thoughtbox#read_cmd)
+        let read_cmd = g:thoughtbox#read_cmd
+        let read_cmd .= ' --database '.thought_folder .g:thoughtbox#database
+        let thought_names = []
+        let params = [thought_folder, thought_names, read_cmd]
+    else
+        let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
+        let thought_names = luaeval(
+                    \'require("thoughtbox").sortNames(_A)',
+                    \thought_names)
+        let params = [thought_folder, thought_names]
+    endif
     let thoughts = luaeval(
                 \'require("thoughtio").readThoughtsTitleAndTags(unpack(_A))',
-                \[thought_folder, thought_names])
+                \params)
+
+    if len(thought_names) == 0
+        let thought_names = keys(thoughts)
+        let thought_names = luaeval(
+                    \'require("thoughtbox").sortNames(_A)',
+                    \thought_names)
+    endif
 
     return [thoughts, thought_names]
 endfunction

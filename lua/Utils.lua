@@ -31,14 +31,19 @@ function Utils.stripString(str)
     return str
 end
 
-function Utils.splitString(str, delim)
+function Utils.splitString(str, delim, max)
     local result = {}
     local i, j = string.find(str,delim)
     local k =1
+    local cnt = 0
     while j ~= nil do
         table.insert(result, string.sub(str,k,i-1))
         k = j+1
         i, j = string.find(str,delim,k)
+        cnt = cnt+1
+        if max and cnt >= max then
+            break
+        end
     end
     table.insert(result, string.sub(str,k))
     return result
@@ -93,6 +98,10 @@ function Utils.test()
     print(Utils.assertEqual({1,2,3},{1,2,3}))
     print(Utils.assertEqual({1,2,3},{1,2}))
     print(Utils.assertEqual({1,2,3},{1,2,'3'}))
+
+    print(Utils.splitString('1,2,3',','))
+    print(Utils.splitString('1,2,3',',',1))
+    print(Utils.splitString('1,2,3',',',2))
 end
 
 return Utils

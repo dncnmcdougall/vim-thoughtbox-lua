@@ -122,7 +122,13 @@ function ThoughtBox.parseThoughtContent(lines, name)
         elseif  res[heading] ~= nil then
             table.insert(res[heading], line)
         else
-            print('Warning did not understand heading '..heading..' in '..name)
+            if heading == nil then
+                msg = 'nil'
+            else
+                msg = heading
+            end
+
+            print('Warning did not understand heading '..msg..' in '..name)
         end
     end
     local tag = nil
@@ -142,7 +148,7 @@ function ThoughtBox.parseThoughtContent(lines, name)
     res.tags = res_tags
     local link = nil
     for i,line in ipairs(res.content) do
-        local matches = string.gmatch(line, '%[%[.*%]%]')
+        local matches = string.gmatch(line, '%[%[.-%]%]')
         for m in matches do
             link = string.sub(m,3,-3)
             table.insert(res.links, link)
