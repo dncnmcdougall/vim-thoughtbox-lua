@@ -10,13 +10,13 @@ function! thoughtbox#postThoughtWrite(name)
         let tags = ''
         let links = ''
         for link in thought.links
-            let links .= ' -l '.link
+            let links .= ' -l '.shellescape(link)
         endfor
         for tag in thought.tags
-            let tags .= ' -t '.tag
+            let tags .= ' -t '.shellescape(tag)
         endfor
 
-        let cmd = g:thoughtbox#write_cmd.' '.a:name.' '.thought.title . links . tags
+        let cmd = g:thoughtbox#write_cmd.' '.a:name.' '.shellescape(thought.title) . links . tags
         let cmd .= ' --database '.thought_folder.g:thoughtbox#database
         exec 'silent !'.cmd
     else
