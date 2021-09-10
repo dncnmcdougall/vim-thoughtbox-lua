@@ -2,6 +2,8 @@ let s:sep = exists('+shellslash') && !&shellslash ? '\' : '/'
 
 function! thoughtbox#postThoughtWrite(name) 
     if executable(g:thoughtbox#write_cmd)
+        let thought_folder = expand(g:thoughtbox#folder).s:sep
+        let lines = getline(line('.'), line('$'))
         let thought = luaeval(
                     \'require("thoughtbox").parseThoughtContent(unpack(_A))',
                     \[lines, a:name])
@@ -15,7 +17,7 @@ function! thoughtbox#postThoughtWrite(name)
         endfor
 
         let cmd = g:thoughtbox#write_cmd.' '.a:name.' '.thought.title . links . tags
-        let cmd .= ' --database '.g:thoughtbox#folder.'/'.g:thoughtbox#database
+        let cmd .= ' --database '.thought_folder.g:thoughtbox#database
         exec 'silent !'.cmd
     else
         echom "Not using read or write: ".g:thoughtbox#write_cmd
@@ -139,7 +141,6 @@ endfunction
 
 function! s:listThoughts() 
     let thought_folder = expand(g:thoughtbox#folder).s:sep
-
 
     if executable(g:thoughtbox#read_cmd)
         let read_cmd = g:thoughtbox#read_cmd

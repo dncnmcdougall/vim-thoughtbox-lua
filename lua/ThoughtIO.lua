@@ -51,7 +51,7 @@ end
 
 function ThoughtIO.readThoughtsTitleAndTags(folder, name_list, read_cmd)
     local thoughts = {}
-    if false and read_cmd ~= nil then
+    if read_cmd ~= nil then
         local pfile = io.popen(read_cmd..' -d')
         local name = ''
         local content = ''
