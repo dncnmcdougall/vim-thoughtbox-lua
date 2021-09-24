@@ -3,7 +3,7 @@ let s:sep = exists('+shellslash') && !&shellslash ? '\' : '/'
 function! thoughtbox#postThoughtWrite(name) 
     if executable(g:thoughtbox#write_cmd)
         let thought_folder = expand(g:thoughtbox#folder).s:sep
-        let lines = getline(line('.'), line('$'))
+        let lines = getline(1, line('$'))
         let thought = luaeval(
                     \'require("thoughtbox").parseThoughtContent(unpack(_A))',
                     \[lines, a:name])
