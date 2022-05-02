@@ -5,7 +5,7 @@ function! thoughtbox#postThoughtWrite(name)
         let thought_folder = expand(g:thoughtbox#folder).s:sep
         let lines = getline(1, line('$'))
         let thought = luaeval(
-                    \'require("thoughtbox").parseThoughtContent(unpack(_A))',
+                    \'require("ThoughtBox").parseThoughtContent(unpack(_A))',
                     \[lines, a:name])
         let tags = ''
         let links = ''
@@ -150,18 +150,18 @@ function! s:listThoughts()
     else
         let thought_names = readdir(thought_folder, { n -> n =~ ".tb$"})
         let thought_names = luaeval(
-                    \'require("thoughtbox").sortNames(_A)',
+                    \'require("ThoughtBox").sortNames(_A)',
                     \thought_names)
         let params = [thought_folder, thought_names]
     endif
     let thoughts = luaeval(
-                \'require("thoughtio").readThoughtsTitleAndTags(unpack(_A))',
+                \'require("ThoughtIO").readThoughtsTitleAndTags(unpack(_A))',
                 \params)
 
     if len(thought_names) == 0
         let thought_names = keys(thoughts)
         let thought_names = luaeval(
-                    \'require("thoughtbox").sortNames(_A)',
+                    \'require("ThoughtBox").sortNames(_A)',
                     \thought_names)
     endif
 
@@ -198,7 +198,7 @@ function! thoughtbox#listThoughtsByTagWithName(content_sep)
     let thought_names = thought_parts[1]
 
     let [tagged, keys] = luaeval(
-                \'require("thoughtio").groupByTags(_A)',
+                \'require("ThoughtIO").groupByTags(_A)',
                 \thoughts)
 
     let list_content = []
@@ -216,7 +216,7 @@ function! thoughtbox#listThoughtsByTag()
     let thought_names = thought_parts[1]
 
     let [tagged, keys] = luaeval(
-                \'require("thoughtio").groupByTags(_A)',
+                \'require("ThoughtIO").groupByTags(_A)',
                 \thoughts)
 
     let list_content = []
