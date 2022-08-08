@@ -29,7 +29,6 @@ function! utils#OpenListWindow( vertical, openpos, size, name, filetype, autoclo
     setlocal textwidth=0
     setlocal nolist
     setlocal nowrap
-    setlocal winfixwidth
     setlocal nospell
     setlocal nonumber
     setlocal nofoldenable
