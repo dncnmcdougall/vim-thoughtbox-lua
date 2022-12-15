@@ -92,7 +92,6 @@ function! s:openList(list_content, initial_search)
     setlocal textwidth=0
     setlocal nolist
     setlocal nowrap
-    setlocal winfixwidth
     setlocal nospell
     setlocal nonumber
     setlocal nofoldenable
