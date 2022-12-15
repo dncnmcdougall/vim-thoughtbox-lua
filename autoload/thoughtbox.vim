@@ -139,7 +139,7 @@ function! s:splitList(list_content)
 
 endfunction
 
-function! s:listThoughts() 
+function! thoughtbox#listThoughts() 
     let thought_folder = expand(g:thoughtbox#folder).s:sep
 
     if executable(g:thoughtbox#read_cmd)
@@ -169,7 +169,7 @@ function! s:listThoughts()
 endfunction
 
 function! thoughtbox#listThoughtsByName(content_sep)
-    let thought_parts = s:listThoughts()
+    let thought_parts = thoughtbox#listThoughts()
     let thoughts = thought_parts[0]
     let thought_names = thought_parts[1]
 
@@ -181,7 +181,7 @@ function! thoughtbox#listThoughtsByName(content_sep)
 endfunction
 
 function! thoughtbox#listThoughtsByNameWithName(content_sep)
-    let thought_parts = s:listThoughts()
+    let thought_parts = thoughtbox#listThoughts()
     let thoughts = thought_parts[0]
     let thought_names = thought_parts[1]
 
@@ -193,7 +193,7 @@ function! thoughtbox#listThoughtsByNameWithName(content_sep)
 endfunction
 
 function! thoughtbox#listThoughtsByTagWithName(content_sep)
-    let thought_parts = s:listThoughts()
+    let thought_parts = thoughtbox#listThoughts()
     let thoughts = thought_parts[0]
     let thought_names = thought_parts[1]
 
@@ -211,7 +211,7 @@ function! thoughtbox#listThoughtsByTagWithName(content_sep)
 endfunction
 
 function! thoughtbox#listThoughtsByTag()
-    let thought_parts = s:listThoughts()
+    let thought_parts = thoughtbox#listThoughts()
     let thoughts = thought_parts[0]
     let thought_names = thought_parts[1]
 

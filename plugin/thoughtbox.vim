@@ -8,11 +8,6 @@ augroup thoughtbox_filetype +detect
     autocmd! BufRead,BufNewFile *.tb set filetype=thoughtbox
 augroup END
 
-augroup thoughtbox_file_write
-    autocmd!
-    autocmd! BufWritePost,FileAppendPost,FileWritePost *.tb call thoughtbox#postThoughtWrite(expand("<afile>:t:r"))
-augroup END
-
 if !exists('g:thoughtbox#folder') 
     let g:thoughtbox#folder='~/thoughtbox'
 endif
@@ -85,6 +80,7 @@ if g:thoughtbox#fzf
         let line_parts = split(a:line,"\t")
         call thoughtbox#open(line_parts[1].line_parts[2], 'edit')
     endfunction
+
     function thoughtbox#SearchThoughtTitles(key, query)
         call fzf#run(s:wrap(a:key, fzf#wrap('thoughtbox#titles', {
                     \ 'source': thoughtbox#listThoughtsByNameWithName("\t"), 

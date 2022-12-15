@@ -124,7 +124,7 @@ def parseThoughtContent(content: List[str], name: str) -> Dict[str,str]:
         elif heading in result:
             result[heading].append(line)
         else:
-            print('Warning: did not understand heading %s in %s' % (heading, name))
+            print('Warning: did not understand heading %s in %s. Ignoring.' % (heading, name))
 
     tags = []
     tag_re = re.compile('#\w*')
@@ -166,7 +166,6 @@ class ThoughtInfoTests(unittest.TestCase):
         def getSorted(arr: List[str]) -> List[str]:
             sortNames(arr)
             return arr
-            
 
         self.assertEqual(getSorted(['b','c','a']), ['a','b','c'])
         self.assertEqual(getSorted(['2','3','1']), ['1','2','3'])
